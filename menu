@@ -1,25 +1,25 @@
 #!/bin/bash
-# By Mohammad Afaneh 2019-2022, Afaneh92 @ XDA Developers.
-# Odin4 downloader menu
+# Odin4 downloader menu by Mohammad Afaneh, afaneh92 @ Github.
 
 # Variables
-version="v2.1"
-DIR=`readlink -f .`
+menu_version="v2.2"
+MENU_DIR=`readlink -f .`
 
 # Color
-ON_BLUE=`echo -e "\033[44m"`	# On Blue
-BRED=`echo -e "\033[1;31m"`	# Bold Red
-BBLUE=`echo -e "\033[1;34m"`	# Bold Blue
-BGREEN=`echo -e "\033[1;32m"`	# Bold Green
-UNDER_LINE=`echo -e "\e[4m"`	# Text Under Line
-STD=`echo -e "\033[0m"`		# Text Clear
+ON_BLUE=`echo -e "\033[44m"`   # On Blue
+ON_LBLUE=`echo -e "\033[104m"` # On Light Blue
+BRED=`echo -e "\033[1;31m"`    # Bold Red
+BBLUE=`echo -e "\033[1;34m"`   # Bold Blue
+BGREEN=`echo -e "\033[1;32m"`  # Bold Green
+UNDER_LINE=`echo -e "\e[4m"`   # Text Under Line
+STD=`echo -e "\033[0m"`        # Text Clear
 
 # Functions
 pause(){
-  read -p "${BRED}$2${STD}Press ${BBLUE}[Enter]${STD} key to $1..." fackEnterKey
+  read -p "${BRED}$2${STD}Press ${ON_LBLUE}[Enter]${STD} key to $1..." fackEnterKey
 }
 
-clear_var() {
+clear_var(){
   bl=""
   ap=""
   cp=""
@@ -28,31 +28,31 @@ clear_var() {
   nand_erase="no"
 }
 
-reboot_bl() {
+reboot_bl(){
   echo " - Rebooting into Download mode";
-  [ ! -z "$($DIR/odin4 -l)" ] && $DIR/odin4 --redownload || adb reboot download
+  [ ! -z "$(${MENU_DIR}/odin4 -l)" ] && ${MENU_DIR}/odin4 --redownload || adb reboot download
   pause 'continue'
 }
 
-reboot_nl() {
+reboot_nl(){
   echo " - Rebooting into Normal mode";
-  [ ! -z "$($DIR/odin4 -l)" ] && $DIR/odin4 --reboot
+  [ ! -z "$(${MENU_DIR}/odin4 -l)" ] && ${MENU_DIR}/odin4 --reboot
   pause 'continue'
 }
 
-flash_tar() {
+flash_tar(){
   [ ! -z "$bl" ] && bl_arg="-b $bl" || bl_arg=""
   [ ! -z "$ap" ] && ap_arg="-a $ap" || ap_arg=""
   [ ! -z "$cp" ] && cp_arg="-c $cp" || cp_arg=""
   [ ! -z "$csc" ] && csc_arg="-s $csc" || csc_arg=""
   [ ! -z "$ums" ] && ums_arg="-u $ums" || ums_arg=""
   [ "$nand_erase" == "yes" ] && nand_erase_arg="-e" || nand_erase_arg=""
-  [ ! -z "$($DIR/odin4 -l)" ] && device_path="-d $($DIR/odin4 -l)"
-  $DIR/odin4 $bl_arg $ap_arg $cp_arg $csc_arg $ums_arg $nand_erase_arg $device_path
+  [ ! -z "$(${MENU_DIR}/odin4 -l)" ] && device_path="-d $(${MENU_DIR}/odin4 -l)"
+  ${MENU_DIR}/odin4 $bl_arg $ap_arg $cp_arg $csc_arg $ums_arg $nand_erase_arg $device_path
   pause 'continue'
 }
 
-choose_tar() {
+choose_tar(){
   find_tar=""
   find_tar=($(ls *.tar *.tar.md5 2>/dev/null))
   declare -i i=1
@@ -77,9 +77,9 @@ clear_var
 # Show menu
 show_menus(){
   clear
-  echo "${ON_BLUE} Odin4 downloader menu $version ${STD}"
+  echo "${ON_BLUE} Odin4 downloader menu $menu_version ${STD}"
   echo " "
-  echo "${BGREEN}ID:COM:${STD} ${ON_BLUE}$($DIR/odin4 -l)${STD}"
+  echo "${BGREEN}ID:COM:${STD} ${ON_BLUE}$(${MENU_DIR}/odin4 -l)${STD}"
   echo "${BGREEN}Files [Download]:${STD}"
   echo "1. ${UNDER_LINE}B${STD}L ${ON_BLUE}$bl${STD}"
   echo "2. ${UNDER_LINE}A${STD}P ${ON_BLUE}$ap${STD}"
@@ -91,12 +91,12 @@ show_menus(){
   echo "6. Reboot into ${UNDER_LINE}D${STD}ownload mode"
   echo "7. Reboot into ${UNDER_LINE}N${STD}ormal mode"
   echo " "
-  echo "${BGREEN}Nand erase all:${STD} ${ON_BLUE}$nand_erase${STD}"
+  echo "${BGREEN}Nand Erase:${STD} ${ON_BLUE}$nand_erase${STD}"
   echo "8. Set/Unset Nand ${UNDER_LINE}e${STD}rase option"
   echo " "
+  echo "${BGREEN}Options:${STD}"
   echo "9. S${UNDER_LINE}t${STD}art"
   echo "10. ${UNDER_LINE}R${STD}eset"
-  echo " "
   echo "11. re${UNDER_LINE}f${STD}resh menu"
   echo "12. E${UNDER_LINE}x${STD}it"
 }
@@ -104,7 +104,7 @@ show_menus(){
 # Read input
 read_options(){
   local choice
-  read -p "Enter choice [ 1 - 12] " choice
+  read -p "Enter choice [ 1 - 12 ]: " choice
   case $choice in
     1|b|B) choose_tar bl ;;
     2|a|A) choose_tar ap ;;
